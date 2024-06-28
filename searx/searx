@@ -1,0 +1,34 @@
+server {
+    # replace hostname.local with your server's name
+    server_name searx.aviral.duckdns.org;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/run/uwsgi/app/searx/socket;
+    }
+
+    root /usr/local/searx/searx-src/searx;
+    location /static { }
+
+    listen [::]:443 ssl; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/searx.aviral.duckdns.org/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/searx.aviral.duckdns.org/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = searx.aviral.duckdns.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    server_name searx.aviral.duckdns.org;
+
+    listen 80;
+    listen [::]:80;
+    return 404; # managed by Certbot
+
+
+}
